@@ -1,0 +1,7 @@
+.pycache_cache/
+server.log
+client.log
+ngrock.log
+A4.*
+.venv/
+smart grids & e-mobility groepsopdracht (v241014).pdf

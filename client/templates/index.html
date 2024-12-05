@@ -1,0 +1,150 @@
+<!-- templates/form.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.2/darkly/bootstrap.min.css">
+</head>
+<body class="container mt-5 bg-dark text-light">
+    <h1 class="mb-4">Parameter Settings</h1>
+    <form action="/update_parameters" method="post" onsubmit="submitForm(event)">
+        <div class="row">
+            <div class="col-md-4">
+                <!-- Panel Cost -->
+                <div class="form-group">
+                    <label for="panel_cost">Panel Cost (EUR per PV panel):</label>
+                    <input type="number" step="0.01" class="form-control" id="panel_cost" name="panel_cost" value="{{ parameters['panel_cost'] }}">
+                </div>
+                <!-- Battery Cost per kWh -->
+                <div class="form-group">
+                    <label for="battery_cost_per_kwh">Battery Cost (EUR per kWh):</label>
+                    <input type="number" step="0.01" class="form-control" id="battery_cost_per_kwh" name="battery_cost_per_kwh" value="{{ parameters['battery_cost_per_kwh'] }}">
+                </div>
+                <!-- Discharge Multiplier -->
+                <div class="form-group">
+                    <label for="discharge_multiplier">Discharge Multiplier:</label>
+                    <input type="number" step="1" class="form-control" id="discharge_multiplier" name="discharge_multiplier" value="{{ parameters['discharge_multiplier'] }}">
+                </div>
+                <!-- Cost taken energy -->
+                <div class="form-group">
+                    <label for="cost_taken_energy">Cost Taken Energy (EUR per kWh):</label>
+                    <input type="number" step="0.01" class="form-control" id="cost_taken_energy" name="cost_taken_energy" value="{{ parameters['cost_taken_energy'] }}">
+                </div>
+                <!-- Income injected energy -->
+                <div class="form-group">
+                    <label for="income_injected_energy">Income Injected Energy (EUR per kWh):</label>
+                    <input type="number" step="0.01" class="form-control" id="income_injected_energy" name="income_injected_energy" value="{{ parameters['income_injected_energy'] }}">
+                </div>
+                <!-- Goal Selection -->
+                <div class="form-group">
+                    <label for="goal">Goal:</label>
+                    <select class="form-control" id="goal" name="goal">
+                        {% for goal in parameters['goals'] %}
+                            <option value="{{ goal }}" {% if goal == parameters['goal'] %}selected{% endif %}>
+                                {{ goal.replace('_', ' ').title() }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Target Yearly Cost -->
+                <div class="form-group" id="target_yearly_cost_group" style="display: none;">
+                    <label for="target_yearly_cost">Target Yearly Cost (EUR):</label>
+                    <input type="number" step="0.01" class="form-control" id="target_yearly_cost" name="target_yearly_cost" value="{{ parameters.get('target_yearly_cost', 0) }}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <!-- Weekday Load Profile -->
+                <h2 class="mt-4">Weekday Load Profile (Watts)</h2>
+                <img src="../static/media/weekday_load_profile.png" alt="Weekday Load Profile" class="img-fluid mb-3">
+                {% for time, load in parameters['weekday_load_profile'].items() %}
+                    <div class="form-group">
+                        <label for="weekday_time_{{ loop.index }}">Time (T{{ loop.index - 1 }}):</label>
+                        <input type="number" step="0.5" class="form-control" id="weekday_time_{{ loop.index }}" name="weekday_time_{{ loop.index }}" value="{{ time }}">
+                        <label for="weekday_load_{{ loop.index }}">Load ({{ 'a' if loop.index == 1 else 'c' if loop.index == 2 else 'b' if loop.index == 3 else 'd' if loop.index == 4 else 'a' }}):</label>
+                        <input type="number" class="form-control" id="weekday_load_{{ loop.index }}" name="weekday_load_{{ loop.index }}" value="{{ load }}">
+                    </div>
+                {% endfor %}
+                <!-- Weekend Load Profile -->
+                <h2 class="mt-4">Weekend Load Profile (Watts)</h2>
+                <img src="../static/media/weekend_load_profile.png" alt="Weekend Load Profile" class="img-fluid mb-3">
+                {% for time, load in parameters['weekend_load_profile'].items() %}
+                    <div class="form-group">
+                        <label for="weekend_time_{{ loop.index }}">Time (T{{ '0' if loop.index == 1 else loop.index + 4 }}):</label>
+                        <input type="number" step="0.5" class="form-control" id="weekend_time_{{ loop.index }}" name="weekend_time_{{ loop.index }}" value="{{ time }}">
+                        <label for="weekend_load_{{ loop.index }}">Load ({{ 'e' if loop.index == 1 else 'f' if loop.index == 2 else 'g' if loop.index == 3 else 'e' }}):</label>
+                        <input type="number" class="form-control" id="weekend_load_{{ loop.index }}" name="weekend_load_{{ loop.index }}" value="{{ load }}">
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col-md-4">
+                <!-- Generation Profiles -->
+                <h2 class="mt-4">Generation Profile (W/kWp)</h2>
+                <h3>Summer Profile</h3>
+                <img src="../static/media/summer_generation_profile.png" alt="Summer Generation Profile" class="img-fluid mb-3">
+                <div class="form-group">
+                    <label for="summer_start_time">Summer Start Time (T8):</label>
+                    <input type="number" step="0.5" class="form-control" id="summer_start_time" name="summer_start_time" value="{{ parameters['generation_profile']['April-September'][0] }}">
+                </div>
+                <div class="form-group">
+                    <label for="summer_end_time">Summer End Time (T9):</label>
+                    <input type="number" step="0.5" class="form-control" id="summer_end_time" name="summer_end_time" value="{{ parameters['generation_profile']['April-September'][1] }}">
+                </div>
+                <div class="form-group">
+                    <label for="summer_generation">Summer Generation (h):</label>
+                    <input type="number" step="0.01" class="form-control" id="summer_generation" name="summer_generation" value="{{ parameters['generation_profile']['April-September'][2] }}">
+                </div>
+                <h3>Winter Profile</h3>
+                <img src="../static/media/winter_generation_profile.png" alt="Winter Generation Profile" class="img-fluid mb-3">
+                <div class="form-group">
+                    <label for="winter_start_time">Winter Start Time (T10):</label>
+                    <input type="number" step="0.5" class="form-control" id="winter_start_time" name="winter_start_time" value="{{ parameters['generation_profile']['October-March'][0] }}">
+                </div>
+                <div class="form-group">
+                    <label for="winter_end_time">Winter End Time (T11):</label>
+                    <input type="number" step="0.5" class="form-control" id="winter_end_time" name="winter_end_time" value="{{ parameters['generation_profile']['October-March'][1] }}">
+                </div>
+                <div class="form-group">
+                    <label for="winter_generation">Winter Generation (i):</label>
+                    <input type="number" step="0.01" class="form-control" id="winter_generation" name="winter_generation" value="{{ parameters['generation_profile']['October-March'][2] }}">
+                </div>
+                <!-- Panel Range -->
+                <div class="form-group">
+                    <label for="panel_range_start">Panel Range Start:</label>
+                    <input type="number" class="form-control" id="panel_range_start" name="panel_range_start" value="{{ parameters['panel_range'][0] }}">
+                </div>
+                <div class="form-group">
+                    <label for="panel_range_end">Panel Range End:</label>
+                    <input type="number" class="form-control" id="panel_range_end" name="panel_range_end" value="{{ parameters['panel_range'][-1] }}">
+                </div>
+                <!-- Battery Range -->
+                <div class="form-group">
+                    <label for="battery_range_start">Battery Range Start (Wh):</label>
+                    <input type="number" class="form-control" id="battery_range_start" name="battery_range_start" value="{{ parameters['battery_range'][0] }}">
+                </div>
+                <div class="form-group">
+                    <label for="battery_range_end">Battery Range End (Wh):</label>
+                    <input type="number" class="form-control" id="battery_range_end" name="battery_range_end" value="{{ parameters['battery_range'][-1] }}">
+                </div>
+                <div class="form-group">
+                    <label for="include_battery">Include Battery:</label>
+                    <input type="checkbox" id="include_battery" name="include_battery" checked>
+                </div>
+                <div class="form-group">
+                    <label for="include_solar">Include Solar Panels:</label>
+                    <input type="checkbox" id="include_solar" name="include_solar" checked>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Parameters</button>
+    </form>
+    <pre id="result" class="mt-4"></pre>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
