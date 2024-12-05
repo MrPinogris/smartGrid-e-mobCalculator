@@ -25,6 +25,8 @@ parameters = {
     'weekend_load_profile': {0: 300, 8: 400, 17: 600, 23: 300},
     'goal': 'most_self_sufficient',
     'discharge_multiplier': 300,
+    'max_investment_cost': 10000,  # New parameter
+    'use_max_investment_cost': False  # New flag
 }
 
 @app.route('/static/<path:filename>')
@@ -57,6 +59,7 @@ def update_parameters():
 
         include_battery = data['include_battery']
         include_solar = data['include_solar']
+        use_max_investment_cost = data['use_max_investment_cost']
 
         new_parameters = {
             'panel_cost': float(data['panel_cost']),
@@ -86,11 +89,12 @@ def update_parameters():
             'battery_range': list(range(int(data['battery_range_start']), int(data['battery_range_end']) + 1000, 1000)) if include_battery else [0],
             'target_yearly_cost': float(data['target_yearly_cost']) if data['goal'] == 'target_cost' else None,
             'discharge_multiplier': int(data['discharge_multiplier']),
+            'max_investment_cost': float(data['max_investment_cost']),
+            'use_max_investment_cost': use_max_investment_cost
         }
 
         logging.debug(f"Sending parameters to backend: {new_parameters}")
 
-        # Send the parameters to the calculation endpoint
         response = requests.post(f"{backend_url}/calculate", json=new_parameters)
         if response.status_code == 200:
             data = response.json()

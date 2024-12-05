@@ -24,6 +24,7 @@ async function submitForm(event) {
 
     data.include_battery = document.getElementById('include_battery').checked;
     data.include_solar = document.getElementById('include_solar').checked;
+    data.use_max_investment_cost = document.getElementById('use_max_investment_cost').checked;
 
     console.log('Sending data:', data); // Debugging statement
     fetch('/update_parameters', {

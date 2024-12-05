@@ -142,7 +142,7 @@ class InvestmentCalculator:
 
         return investment_cost, operational_cost
 
-def find_optimal_configuration(weekday_load_profile, weekend_load_profile, generation_profile, months, panel_cost, battery_cost_per_kwh, cost_taken_energy, income_injected_energy, panel_range, battery_range, goal_type, target_yearly_cost=None, investment_weight=0.5, discharge_multiplier=300):
+def find_optimal_configuration(weekday_load_profile, weekend_load_profile, generation_profile, months, panel_cost, battery_cost_per_kwh, cost_taken_energy, income_injected_energy, panel_range, battery_range, goal_type, target_yearly_cost=None, investment_weight=0.5, discharge_multiplier=300, max_investment_cost=None, use_max_investment_cost=False):
     best_configuration = None
 
     lowest_cost = float('inf')
@@ -167,7 +167,6 @@ def find_optimal_configuration(weekday_load_profile, weekend_load_profile, gener
         total_energy_injected_without_battery = 0
 
         for month in months:
-            # Start with a fully charged battery at the beginning of each month
             battery = Battery(max_capacity=battery_capacity, discharge_multiplier=discharge_multiplier, initial_charge=battery_capacity)
             week = Week(weekday_load_profile, weekend_load_profile, generation_profile, cells, battery, month)
             noBatteryWeek = Week(weekday_load_profile, weekend_load_profile, generation_profile, cells, Battery(0, 0), month)
@@ -176,29 +175,26 @@ def find_optimal_configuration(weekday_load_profile, weekend_load_profile, gener
             total_week_injected_noBattery, total_week_taken_noBattery = noBatteryWeek.summary()
             total_week_injected_noSolar, total_week_taken_noSolar = noSolarWeek.summary()
 
-            # Calculate costs
             investment_cost, operational_cost = calculator.calculate_cost(cells, battery_capacity, total_week_injected, total_week_taken)
-            total_investment_cost = investment_cost  # Only take the investment cost once, as it is not recurring
+            total_investment_cost = investment_cost
             total_yearly_cost += operational_cost * 52
 
-            # Yearly cost without battery (i.e., assuming no battery storage)
             operational_cost_without_battery = (total_week_taken_noBattery / 1000 * cost_taken_energy) + (total_week_injected_noBattery / 1000 * income_injected_energy)
             total_yearly_cost_without_battery += operational_cost_without_battery * 52
 
-            # Yearly cost without both PV panels and battery (i.e., all energy taken from the grid)
             operational_cost_without_panels = (total_week_taken_noSolar / 1000 * cost_taken_energy) * 52
             total_yearly_cost_without_panels += operational_cost_without_panels
 
-            # Calculate energy taken from the net
             total_energy_taken_with_battery += total_week_taken
             total_energy_taken_without_battery += total_week_taken_noBattery
             total_energy_injected_with_battery += total_week_injected
             total_energy_injected_without_battery += total_week_injected_noBattery
 
-        # Calculate total cost
         total_cost = total_investment_cost + total_yearly_cost
 
-        # Calculate self-sufficiency scores
+        if use_max_investment_cost and total_investment_cost > max_investment_cost:
+            continue
+
         if total_energy_taken_with_battery + total_week_injected > 0:
             self_sufficiency_with_battery = 10 - (total_energy_taken_with_battery / (total_energy_taken_with_battery + total_week_injected)) * 10
         else:
@@ -209,14 +205,12 @@ def find_optimal_configuration(weekday_load_profile, weekend_load_profile, gener
         else:
             self_sufficiency_without_battery = 10
 
-        # Calculate a weighted score to balance investment and yearly costs
         weighted_score = investment_weight * total_investment_cost + (1 - investment_weight) * total_yearly_cost
 
         yearly_savings = total_yearly_cost_without_panels - total_yearly_cost
         payback_period_days = total_investment_cost / (yearly_savings / 365)
         payback_period = payback_period_days / 365
 
-        # Check if this is the best configuration
         match goal_type:
             case 'most_self_sufficient':
                 if (total_energy_taken_with_battery < most_self_sufficient_value or 
@@ -266,6 +260,8 @@ def calculate():
         goal_type = data['goal']
         target_yearly_cost = float(data['target_yearly_cost']) if data['target_yearly_cost'] is not None else None
         discharge_multiplier = int(data['discharge_multiplier'])
+        max_investment_cost = float(data['max_investment_cost']) if data['max_investment_cost'] is not None else None
+        use_max_investment_cost = data['use_max_investment_cost']
 
         logging.debug(f"Received data: {data}")
 
@@ -283,7 +279,10 @@ def calculate():
             battery_range,
             goal_type,
             target_yearly_cost,
-            discharge_multiplier=discharge_multiplier
+            investment_weight=0.5,  # Ensure this parameter is passed
+            discharge_multiplier=discharge_multiplier,
+            max_investment_cost=max_investment_cost,
+            use_max_investment_cost=use_max_investment_cost
         )
 
         logging.debug(f"Best configuration: {best_configuration}")
