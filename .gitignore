@@ -1,3 +1,4 @@
 *.log
 *.lock
 *.pdf
+ngrok_authtoken.txt

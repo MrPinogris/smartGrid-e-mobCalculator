@@ -31,7 +31,31 @@ def start_server(script_path, log_path):
     print(f"Started server for {script_path} with PID: {process.pid}")
     return process
 
+def create_ngrok_config(authtoken):
+    content = f"""version: "3"
+agent:
+    authtoken: {authtoken}
+tunnels:
+  flask_backend:
+    proto: http
+    addr: 5001
+  flask_frontend:
+    proto: http
+    addr: 5000
+"""
+    with open("ngrok.yml", "w") as file:
+        file.write(content)
+    print("ngrok.yml file created successfully!")
+
 def start_ngrok():
+    with open('ngrok_authtoken.txt', 'r') as token_file:
+         authtoken = token_file.read()
+         print(f"Raw authtoken: {authtoken}")  # Debugging statement
+         authtoken = authtoken.strip()
+         print(f"Stripped authtoken: {authtoken}")  # Debugging statement
+
+    create_ngrok_config(authtoken)
+
     with open(NGROK_LOG, 'w') as log_file:
         ngrok_process = subprocess.Popen(
             ['ngrok', 'start', '--all', '--config', 'ngrok.yml'],
@@ -54,8 +78,6 @@ def get_ngrok_urls(retries=5, delay=2):
             print(f"Error getting ngrok URLs: {e}")
             time.sleep(delay)
     return {}
-
-#TODO: fix the POST and GET requests
 
 def set_ngrok_url(url):
     try:
