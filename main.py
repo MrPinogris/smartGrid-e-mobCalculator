@@ -42,6 +42,11 @@ tunnels:
   flask_frontend:
     proto: http
     addr: 5000
+endpoints:
+  - name: flask_frontend_endpoint
+    url: thorough-seal-smart.ngrok-free.app
+    upstream:
+      url: http://localhost:5000
 """
     with open("ngrok.yml", "w") as file:
         file.write(content)
