@@ -180,6 +180,8 @@ def main():
         if os.path.exists(PID_FILE):
             os.remove(PID_FILE)
         print("Cleaned up lock and PID files.")
+        if os.path.exists("ngrok.yml"):
+            os.remove("ngrok.yml")
 
 if __name__ == "__main__":
     main()
