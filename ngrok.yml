@@ -1,0 +1,10 @@
+version: "3"
+agent:
+    authtoken: 2poLlweUXLe60RUch7oskPDkUn2_5biWpY3YWkRQmxrLZLZYo
+tunnels:
+  flask_backend:
+    proto: http
+    addr: 5001
+  flask_frontend:
+    proto: http
+    addr: 5000
