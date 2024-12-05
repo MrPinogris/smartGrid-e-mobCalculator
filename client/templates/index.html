@@ -56,12 +56,12 @@
                     <input type="number" step="0.01" class="form-control" id="target_yearly_cost" name="target_yearly_cost" value="{{ parameters.get('target_yearly_cost', 0) }}">
                 </div>
                 <div class="form-group">
-                    <label for="max_investment_cost">Max Investment Cost (EUR):</label>
-                    <input type="number" step="0.01" class="form-control" id="max_investment_cost" name="max_investment_cost" value="{{ parameters['max_investment_cost'] }}">
-                </div>
-                <div class="form-group">
                     <label for="use_max_investment_cost">Use Max Investment Cost:</label>
                     <input type="checkbox" id="use_max_investment_cost" name="use_max_investment_cost" {% if parameters['use_max_investment_cost'] %}checked{% endif %}>
+                </div>
+                <div class="form-group" id="max_investment_cost_group" style="display: none;">
+                    <label for="max_investment_cost">Max Investment Cost (EUR):</label>
+                    <input type="number" step="0.01" class="form-control" id="max_investment_cost" name="max_investment_cost" value="{{ parameters['max_investment_cost'] }}">
                 </div>
             </div>
             <div class="col-md-4">

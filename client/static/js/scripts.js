@@ -82,6 +82,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const useMaxInvestmentCostCheckbox = document.getElementById('use_max_investment_cost');
+    const maxInvestmentCostGroup = document.getElementById('max_investment_cost_group');
+
+    // Function to toggle the visibility of the max investment cost input field
+    function toggleMaxInvestmentCost() {
+        if (useMaxInvestmentCostCheckbox.checked) {
+            maxInvestmentCostGroup.style.display = 'block';
+        } else {
+            maxInvestmentCostGroup.style.display = 'none';
+        }
+    }
+
+    // Initial toggle based on the checkbox state
+    toggleMaxInvestmentCost();
+
+    // Add event listener to the checkbox
+    useMaxInvestmentCostCheckbox.addEventListener('change', toggleMaxInvestmentCost);
+});
+
 document.getElementById('goal').addEventListener('change', function() {
     var goal = this.value;
     var targetPaybackPeriodContainer = document.getElementById('target_yearly_cost_group');
