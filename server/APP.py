@@ -219,11 +219,59 @@ def find_optimal_configuration(weekday_load_profile, weekend_load_profile, gener
                     best_configuration = (cells, battery_capacity, total_cost, total_yearly_cost, total_yearly_cost_without_battery, total_yearly_cost_without_panels, total_investment_cost, total_energy_taken_with_battery, total_energy_taken_without_battery, self_sufficiency_with_battery, self_sufficiency_without_battery, total_energy_injected_with_battery, total_energy_injected_without_battery)
 
             case 'target_cost':
-                if target_yearly_cost is not None and total_yearly_cost < target_yearly_cost and (
-                    total_investment_cost < closest_to_target_cost or 
-                    (total_investment_cost == closest_to_target_cost and (best_configuration is None or total_yearly_cost < best_configuration[3]))):
-                    closest_to_target_cost = total_investment_cost
-                    best_configuration = (cells, battery_capacity, total_cost, total_yearly_cost, total_yearly_cost_without_battery, total_yearly_cost_without_panels, total_investment_cost, total_energy_taken_with_battery, total_energy_taken_without_battery, self_sufficiency_with_battery, self_sufficiency_without_battery, total_energy_injected_with_battery, total_energy_injected_without_battery)
+                if target_yearly_cost is not None:
+                    if total_yearly_cost <= target_yearly_cost:
+                        # If we are within the target yearly cost, prioritize a lower investment cost
+                        if (
+                            best_configuration is None
+                            or total_investment_cost < best_configuration[6]
+                            or (
+                                total_investment_cost == best_configuration[6]
+                                and total_yearly_cost < best_configuration[3]
+                            )
+                        ):
+                            closest_to_target_cost = total_investment_cost
+                            best_configuration = (
+                                cells,
+                                battery_capacity,
+                                total_cost,
+                                total_yearly_cost,
+                                total_yearly_cost_without_battery,
+                                total_yearly_cost_without_panels,
+                                total_investment_cost,
+                                total_energy_taken_with_battery,
+                                total_energy_taken_without_battery,
+                                self_sufficiency_with_battery,
+                                self_sufficiency_without_battery,
+                                total_energy_injected_with_battery,
+                                total_energy_injected_without_battery,
+                            )
+                    else:
+                        # If we exceed the target yearly cost, find the configuration that gets as close as possible
+                        if (
+                            best_configuration is None
+                            or total_yearly_cost < best_configuration[3]
+                            or (
+                                total_yearly_cost == best_configuration[3]
+                                and total_investment_cost < best_configuration[6]
+                            )
+                        ):
+                            closest_to_target_cost = total_investment_cost
+                            best_configuration = (
+                                cells,
+                                battery_capacity,
+                                total_cost,
+                                total_yearly_cost,
+                                total_yearly_cost_without_battery,
+                                total_yearly_cost_without_panels,
+                                total_investment_cost,
+                                total_energy_taken_with_battery,
+                                total_energy_taken_without_battery,
+                                self_sufficiency_with_battery,
+                                self_sufficiency_without_battery,
+                                total_energy_injected_with_battery,
+                                total_energy_injected_without_battery,
+                            )
 
     return best_configuration
 
@@ -236,10 +284,6 @@ def handle_ngrok_url():
         return jsonify({'message': 'ngrok URL set successfully'}), 200
     else:
         return jsonify({'ngrok_url': ngrok_url})
-
-
-
-#TODO: try moving GET url to client side file to get the url in the js file
 
 @app.route('/calculate', methods=['POST'])
 def calculate():
