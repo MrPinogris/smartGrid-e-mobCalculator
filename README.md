@@ -4,6 +4,10 @@
 
 The SmartGrid e-Mobility Calculator is a tool designed to optimize the configuration of photovoltaic (PV) panels and energy storage systems to achieve various goals such as minimizing costs, achieving self-sufficiency, or meeting a target yearly cost. The program calculates the optimal configuration based on user-defined parameters and provides detailed results including investment costs, yearly savings, and payback periods.
 
+## Purpose
+
+This program was created as part of a school assignment for the Smart Grids & e-Mobility course. The task required developing a tool to assist in the planning and optimization of PV panels and energy storage systems for various scenarios.
+
 ## Features
 
 - Calculate optimal configuration of PV panels and batteries
