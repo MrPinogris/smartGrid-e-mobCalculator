@@ -60,6 +60,8 @@ def update_parameters():
         include_battery = data['include_battery']
         include_solar = data['include_solar']
         use_max_investment_cost = data['use_max_investment_cost']
+        user_defined_battery_size = float(data['user_defined_battery_size']) if data['user_defined_battery_size'] else None
+        user_defined_cells = int(data['user_defined_cells']) if data['user_defined_cells'] else None
 
         new_parameters = {
             'panel_cost': float(data['panel_cost']),
@@ -90,7 +92,9 @@ def update_parameters():
             'target_yearly_cost': float(data['target_yearly_cost']) if data['goal'] == 'target_cost' else None,
             'discharge_multiplier': int(data['discharge_multiplier']),
             'max_investment_cost': float(data['max_investment_cost']),
-            'use_max_investment_cost': use_max_investment_cost
+            'use_max_investment_cost': use_max_investment_cost,
+            'user_defined_battery_size': user_defined_battery_size,
+            'user_defined_cells': user_defined_cells
         }
 
         logging.debug(f"Sending parameters to backend: {new_parameters}")

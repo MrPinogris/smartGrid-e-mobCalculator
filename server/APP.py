@@ -142,7 +142,7 @@ class InvestmentCalculator:
 
         return investment_cost, operational_cost
 
-def find_optimal_configuration(weekday_load_profile, weekend_load_profile, generation_profile, months, panel_cost, battery_cost_per_kwh, cost_taken_energy, income_injected_energy, panel_range, battery_range, goal_type, target_yearly_cost=None, investment_weight=0.5, discharge_multiplier=300, max_investment_cost=None, use_max_investment_cost=False):
+def find_optimal_configuration(weekday_load_profile, weekend_load_profile, generation_profile, months, panel_cost, battery_cost_per_kwh, cost_taken_energy, income_injected_energy, panel_range, battery_range, goal_type, target_yearly_cost=None, investment_weight=0.5, discharge_multiplier=300, max_investment_cost=None, use_max_investment_cost=False, user_defined_battery_size=None, user_defined_cells=None):
     best_configuration = None
 
     lowest_cost = float('inf')
@@ -152,7 +152,10 @@ def find_optimal_configuration(weekday_load_profile, weekend_load_profile, gener
     closest_to_target_cost = float('inf')
     calculator = InvestmentCalculator(panel_cost, battery_cost_per_kwh, cost_taken_energy, income_injected_energy)
 
-    configuration_list = itertools.product(panel_range, battery_range)
+    if user_defined_battery_size is not None and user_defined_cells is not None:
+        configuration_list = [(user_defined_cells, user_defined_battery_size)]
+    else:
+        configuration_list = itertools.product(panel_range, battery_range)
 
     for cells, battery_capacity in configuration_list:
         total_yearly_cost = 0
