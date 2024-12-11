@@ -309,6 +309,9 @@ def calculate():
         discharge_multiplier = int(data['discharge_multiplier'])
         max_investment_cost = float(data['max_investment_cost']) if data['max_investment_cost'] is not None else None
         use_max_investment_cost = data['use_max_investment_cost']
+        # TODO: change the names of the send JSON keys to match the frontend
+        user_defined_cells = float(data['user_defined_battery_size']) if data['user_defined_battery_size'] is not None else None
+        user_defined_battery_size= int(data['user_defined_cells']) if data['user_defined_cells'] is not None else None
 
         logging.debug(f"Received data: {data}")
 
@@ -329,7 +332,9 @@ def calculate():
             investment_weight=0.5,  # Ensure this parameter is passed
             discharge_multiplier=discharge_multiplier,
             max_investment_cost=max_investment_cost,
-            use_max_investment_cost=use_max_investment_cost
+            use_max_investment_cost=use_max_investment_cost,
+            user_defined_cells=user_defined_cells,
+            user_defined_battery_size=user_defined_battery_size
         )
 
         logging.debug(f"Best configuration: {best_configuration}")
