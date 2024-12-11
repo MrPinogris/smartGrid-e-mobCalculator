@@ -52,20 +52,20 @@ async function submitForm(event) {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>Panels</td><td>${data.panels}</td></tr>
-                        <tr><td>Battery Capacity</td><td>${data.battery_capacity} Wh</td></tr>
-                        <tr><td>Total Investment Cost</td><td>EUR ${data.total_investment_cost}</td></tr>
-                        <tr><td>Yearly Cost</td><td>EUR ${data.yearly_cost}</td></tr>
-                        <tr><td>Yearly Cost without Battery</td><td>EUR ${data.yearly_cost_without_battery}</td></tr>
-                        <tr><td>Yearly Cost without Panels and Battery</td><td>EUR ${data.yearly_cost_without_panels_and_battery}</td></tr>
-                        <tr><td>Energy Taken with Battery</td><td>${data.energy_taken_with_battery} Wh</td></tr>
-                        <tr><td>Energy Taken without Battery</td><td>${data.energy_taken_without_battery} Wh</td></tr>
-                        <tr><td>Self-Sufficiency with Battery</td><td>${data.self_sufficiency_with_battery}/10</td></tr>
-                        <tr><td>Self-Sufficiency without Battery</td><td>${data.self_sufficiency_without_battery}/10</td></tr>
-                        <tr><td>Yearly Injected Energy with Battery</td><td>${data.total_energy_injected_with_battery} Wh</td></tr>
-                        <tr><td>Yearly Injected Energy without Battery</td><td>${data.total_energy_injected_without_battery} Wh</td></tr>
-                        <tr><td>Yearly Savings</td><td>EUR ${yearlySavings}</td></tr>
-                        <tr><td>Payback Period</td><td>${paybackPeriod}</td></tr>
+                        <tr><td data-label="Parameter">Panels</td><td data-label="Value">${data.panels}</td></tr>
+                        <tr><td data-label="Parameter">Battery Capacity</td><td data-label="Value">${data.battery_capacity} Wh</td></tr>
+                        <tr><td data-label="Parameter">Total Investment Cost</td><td data-label="Value">EUR ${data.total_investment_cost}</td></tr>
+                        <tr><td data-label="Parameter">Yearly Cost</td><td data-label="Value">EUR ${data.yearly_cost}</td></tr>
+                        <tr><td data-label="Parameter">Yearly Cost without Battery</td><td data-label="Value">EUR ${data.yearly_cost_without_battery}</td></tr>
+                        <tr><td data-label="Parameter">Yearly Cost without Panels and Battery</td><td data-label="Value">EUR ${data.yearly_cost_without_panels_and_battery}</td></tr>
+                        <tr><td data-label="Parameter">Energy Taken with Battery</td><td data-label="Value">${data.energy_taken_with_battery} Wh</td></tr>
+                        <tr><td data-label="Parameter">Energy Taken without Battery</td><td data-label="Value">${data.energy_taken_without_battery} Wh</td></tr>
+                        <tr><td data-label="Parameter">Self-Sufficiency with Battery</td><td data-label="Value">${data.self_sufficiency_with_battery}/10</td></tr>
+                        <tr><td data-label="Parameter">Self-Sufficiency without Battery</td><td data-label="Value">${data.self_sufficiency_without_battery}/10</td></tr>
+                        <tr><td data-label="Parameter">Yearly Injected Energy with Battery</td><td data-label="Value">${data.total_energy_injected_with_battery} Wh</td></tr>
+                        <tr><td data-label="Parameter">Yearly Injected Energy without Battery</td><td data-label="Value">${data.total_energy_injected_without_battery} Wh</td></tr>
+                        <tr><td data-label="Parameter">Yearly Savings</td><td data-label="Value">EUR ${yearlySavings}</td></tr>
+                        <tr><td data-label="Parameter">Payback Period</td><td data-label="Value">${paybackPeriod}</td></tr>
                     </tbody>
                 </table>`;
         }
