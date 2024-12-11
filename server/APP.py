@@ -142,7 +142,7 @@ class InvestmentCalculator:
 
         return investment_cost, operational_cost
 
-def find_optimal_configuration(weekday_load_profile, weekend_load_profile, generation_profile, months, panel_cost, battery_cost_per_kwh, cost_taken_energy, income_injected_energy, panel_range, battery_range, goal_type, target_yearly_cost=None, investment_weight=0.5, discharge_multiplier=300, max_investment_cost=None, use_max_investment_cost=False):
+def find_optimal_configuration(weekday_load_profile, weekend_load_profile, generation_profile, months, panel_cost, battery_cost_per_kwh, cost_taken_energy, income_injected_energy, panel_range, battery_range, goal_type, target_yearly_cost=None, investment_weight=0.5, discharge_multiplier=300, max_investment_cost=None, use_max_investment_cost=False, user_defined_battery_size=None, user_defined_cells=None):
     best_configuration = None
 
     lowest_cost = float('inf')
@@ -152,7 +152,10 @@ def find_optimal_configuration(weekday_load_profile, weekend_load_profile, gener
     closest_to_target_cost = float('inf')
     calculator = InvestmentCalculator(panel_cost, battery_cost_per_kwh, cost_taken_energy, income_injected_energy)
 
-    configuration_list = itertools.product(panel_range, battery_range)
+    if user_defined_battery_size is not None and user_defined_cells is not None:
+        configuration_list = [(user_defined_cells, user_defined_battery_size)]
+    else:
+        configuration_list = itertools.product(panel_range, battery_range)
 
     for cells, battery_capacity in configuration_list:
         total_yearly_cost = 0
@@ -306,6 +309,9 @@ def calculate():
         discharge_multiplier = int(data['discharge_multiplier'])
         max_investment_cost = float(data['max_investment_cost']) if data['max_investment_cost'] is not None else None
         use_max_investment_cost = data['use_max_investment_cost']
+        # TODO: change the names of the send JSON keys to match the frontend
+        user_defined_cells = float(data['user_defined_battery_size']) if data['user_defined_battery_size'] is not None else None
+        user_defined_battery_size= int(data['user_defined_cells']) if data['user_defined_cells'] is not None else None
 
         logging.debug(f"Received data: {data}")
 
@@ -326,7 +332,9 @@ def calculate():
             investment_weight=0.5,  # Ensure this parameter is passed
             discharge_multiplier=discharge_multiplier,
             max_investment_cost=max_investment_cost,
-            use_max_investment_cost=use_max_investment_cost
+            use_max_investment_cost=use_max_investment_cost,
+            user_defined_cells=user_defined_cells,
+            user_defined_battery_size=user_defined_battery_size
         )
 
         logging.debug(f"Best configuration: {best_configuration}")
