@@ -8,8 +8,8 @@ a = Analysis(
     pathex=['.'],
     binaries=[],
     datas=[
-        ('server/app.py', 'server'),
-        ('client/app.py', 'client'),
+        ('server/APP.py', 'server'),
+        ('client/APP.py', 'client'),
         ('ngrok.yml', '.')
     ],
     hiddenimports=[],

@@ -7,8 +7,8 @@ import requests
 import json
 
 # Paths to your scripts
-BACKEND_SCRIPT = "server/app.py"
-FRONTEND_SCRIPT = "client/app.py"
+BACKEND_SCRIPT = "server/APP.py"
+FRONTEND_SCRIPT = "client/APP.py"
 
 # Log file paths
 BACKEND_LOG = "backend.log"
